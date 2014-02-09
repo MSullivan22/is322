@@ -153,23 +153,43 @@
 	}
 
 	//Set up Auxiliary content
+	$('.aux header a').addClass('disabled');
+	
 	function loadAux() {
 		var $aux = $('.aux');
 		$aux.each(function(index) {
-			var $this = $(this);
-			var auxLink = $this.find('a');
-			var auxFragment = auxLink.attr('href');
-			var auxContent = $this.find('[role=tabpanel]');
-			if (auxContent.size()===0 && $this.hasClass('loaded')===false) {
+			var $this = $(this),
+				auxLink = $this.find('a'), 
+				auxFragment = auxLink.attr('href'),
+				auxContent = $this.find('[role=tabpanel]');
+			if(auxContent.size()===0 && $this.hasClass('loaded')===false){
 				loadContent(auxFragment,$this);
 			}
 		});
 	}
 
-	function loadContent(src,container) { // Load Tab Content
+	function loadContent(src,container) { //Load Tab Content
 		container.addClass('loaded');
 		$('<div role="tabpanel" />').load(src +' #content > div',function() {
 			$(this).appendTo(container);
 		});
 	}
+	
+	$('.aux header a').click(function() {
+		var $this = $(this),
+			thisHref = $this.attr('href'),
+			tabParent = $(this).parents('section'),
+			tabPanel = tabParent.find('[role=tabpanel]');
+		if(mobile) { //If Mobile
+			if(tabPanel.size()===0) { //Load content if not present
+				loadContent(thisHref,tabParent);
+				$this.addClass('open');
+			} else { //Toggle 
+				tabPanel.toggle();
+				$this.toggleClass('open');
+			}
+		} 
+		return false;
+	});
+	
 })(this);
